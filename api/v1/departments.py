@@ -1,11 +1,14 @@
-from flask import jsonify, request
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask import jsonify, request, Blueprint
+from flask_jwt_extended import jwt_required
 
-from models import Department, Role, User, db
+from models.department import Department
+from models import db
+
+# 初始化蓝图
+departments_blueprint = Blueprint("departments", __name__)
 
 
-@app.route("/departments", methods=["POST"])
+@departments_blueprint.route("/departments", methods=["POST"])
 @jwt_required()
 def create_department():
     department_name = request.json.get("name")
@@ -25,7 +28,7 @@ def create_department():
     ), 201
 
 
-@app.route("/departments", methods=["GET"])
+@departments_blueprint.route("/departments", methods=["GET"])
 @jwt_required()
 def get_departments():
     departments = Department.query.all()
@@ -33,7 +36,7 @@ def get_departments():
     return jsonify(departments=department_list), 200
 
 
-@app.route("/departments/<int:dept_id>", methods=["PUT"])
+@departments_blueprint.route("/departments/<int:dept_id>", methods=["PUT"])
 @jwt_required()
 def edit_department(dept_id):
     department = Department.query.get_or_404(dept_id)
@@ -43,7 +46,7 @@ def edit_department(dept_id):
     return jsonify(message="Department updated successfully"), 200
 
 
-@app.route("/departments/<int:dept_id>", methods=["DELETE"])
+@departments_blueprint.route("/departments/<int:dept_id>", methods=["DELETE"])
 @jwt_required()
 def delete_department(dept_id):
     department = Department.query.get_or_404(dept_id)

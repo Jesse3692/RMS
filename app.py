@@ -3,6 +3,11 @@ from flask import Flask
 from config.config import bcrypt, jsonrpc, jwt, login_manager, redis_client
 from config.database_config import DatabaseConfig
 from config.jwt_config import JWTConfig
+from api.v1.auth.auth import auth_blueprint
+from api.v1.users import users_blueprint
+from api.v1.departments import departments_blueprint
+from api.v1.roles import roles_blueprint
+
 
 # from config.session_config import SessionConfig
 from models import db, init_db
@@ -25,6 +30,12 @@ def create_app():
     login_manager.init_app(app)
     bcrypt.init_app(app)
     redis_client.init_app(app)
+
+    # 注册蓝图
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(users_blueprint)
+    app.register_blueprint(departments_blueprint)
+    app.register_blueprint(roles_blueprint)
 
     with app.app_context():
         db.create_all()

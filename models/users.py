@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # noqa:E501
     updated_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
@@ -20,7 +20,7 @@ class User(UserMixin, db.Model):
     # 关系
     password = db.relationship("UserPassword", backref="user", uselist=False)
     user_info = db.relationship("UserInfo", backref="user", lazy="dynamic")
-    login_info = db.relationship("UserLoginInfo", backref="user", uselist=False)
+    login_info = db.relationship("UserLoginInfo", backref="user", uselist=False)  # noqa:E501
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -28,19 +28,17 @@ class User(UserMixin, db.Model):
     def set_password(self, password):
         if not self.password:
             self.password = UserPassword(user_id=self.id)
-        self.password.password_hash = bcrypt.generate_password_hash(password).decode(
-            "utf-8"
-        )
+        self.password.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")  # noqa:E501
 
         # 更新密码修改时间
         if self.login_info:
-            self.login_info.last_password_change_time = datetime.now(timezone.utc)
+            self.login_info.last_password_change_time = datetime.now(timezone.utc)  # noqa:E501
             if not self.login_info.has_changed_initial_password:
                 self.login_info.has_changed_initial_password = True
 
     def check_password(self, password):
         if self.password:
-            return bcrypt.check_password_hash(self.password.password_hash, password)
+            return bcrypt.check_password_hash(self.password.password_hash, password)  # noqa:E501
         return False
 
     def record_login(self):
@@ -58,7 +56,7 @@ class UserLoginInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    register_time = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    register_time = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # noqa:E501
     login_count = db.Column(db.Integer, default=0)
     last_login_time = db.Column(db.DateTime)
     is_new_user = db.Column(db.Boolean, default=True)
@@ -89,9 +87,9 @@ class UserInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    field_id = db.Column(db.Integer, db.ForeignKey("user_fields.id"), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey("user_fields.id"), nullable=False)  # noqa:E501
     value = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # noqa:E501
     updated_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),

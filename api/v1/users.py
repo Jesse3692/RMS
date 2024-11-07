@@ -1,11 +1,16 @@
-from flask import jsonify, request
+from flask import jsonify, request, Blueprint
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from models import Department, Role, User, db
+from models.users import User
+from models.role import Role
+from models import db
+
+# 初始化蓝图
+users_blueprint = Blueprint("users", __name__)
 
 
-@app.route("/users", methods=["POST"])
+@users_blueprint.route("/users", methods=["POST"])
 @jwt_required()
 def create_user():
     # 获取当前用户身份，用于权限控制（例如创建用户需要管理员权限）
@@ -36,14 +41,14 @@ def create_user():
     for role_id in roles:
         role = Role.query.get(role_id)
         if role:
-            new_user.roles.append(role)
+            new_user.roles.users_blueprintend(role)
 
     db.session.commit()
 
     return jsonify(message="User created successfully", user_id=new_user.id), 201
 
 
-@app.route("/users", methods=["GET"])
+@users_blueprint.route("/users", methods=["GET"])
 @jwt_required()
 def get_users():
     users = User.query.all()
@@ -55,12 +60,12 @@ def get_users():
             "department": user.department.name if user.department else "N/A",
             "roles": [role.name for role in user.roles],
         }
-        user_list.append(user_info)
+        user_list.users_blueprintend(user_info)
 
     return jsonify(users=user_list), 200
 
 
-@app.route("/users/<int:user_id>", methods=["PUT"])
+@users_blueprint.route("/users/<int:user_id>", methods=["PUT"])
 @jwt_required()
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -85,14 +90,14 @@ def edit_user(user_id):
     for role_id in roles:
         role = Role.query.get(role_id)
         if role:
-            user.roles.append(role)
+            user.roles.users_blueprintend(role)
 
     db.session.commit()
 
     return jsonify(message="User updated successfully"), 200
 
 
-@app.route("/users/<int:user_id>", methods=["DELETE"])
+@users_blueprint.route("/users/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -101,7 +106,7 @@ def delete_user(user_id):
     return jsonify(message="User deleted successfully"), 200
 
 
-@app.route("/users/<int:user_id>/toggle", methods=["PATCH"])
+@users_blueprint.route("/users/<int:user_id>/toggle", methods=["PATCH"])
 @jwt_required()
 def toggle_user(user_id):
     user = User.query.get_or_404(user_id)
