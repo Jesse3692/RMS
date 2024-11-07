@@ -1,6 +1,9 @@
 from functools import wraps
 
-from flask_jwt_extended import get_jwt_identity
+from flask import jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
+from models.users import User
 
 
 def role_required(role_name):

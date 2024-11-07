@@ -1,7 +1,11 @@
 from datetime import datetime, timezone
-from . import db
-from config.config import bcrypt
+
 from flask_login import UserMixin
+
+from config.config import bcrypt
+from models.role import Role
+
+from . import db
 
 
 class User(UserMixin, db.Model):
@@ -21,6 +25,10 @@ class User(UserMixin, db.Model):
     password = db.relationship("UserPassword", backref="user", uselist=False)
     user_info = db.relationship("UserInfo", backref="user", lazy="dynamic")
     login_info = db.relationship("UserLoginInfo", backref="user", uselist=False)  # noqa:E501
+    roles = db.relationship("Role", secondary="user_roles", back_populates="users")  # noqa:E501
+    positions = db.relationship(
+        "Position", secondary="user_positions", back_populates="users"
+    )
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -28,7 +36,9 @@ class User(UserMixin, db.Model):
     def set_password(self, password):
         if not self.password:
             self.password = UserPassword(user_id=self.id)
-        self.password.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")  # noqa:E501
+        self.password.password_hash = bcrypt.generate_password_hash(password).decode(
+            "utf-8"
+        )  # noqa:E501
 
         # 更新密码修改时间
         if self.login_info:
@@ -49,6 +59,14 @@ class User(UserMixin, db.Model):
         self.login_info.last_login_time = lambda: datetime.now(timezone.utc)()
         self.login_info.login_count = (self.login_info.login_count or 0) + 1
         self.login_info.is_new_user = False
+
+
+# 定义多对多关系的中间表
+user_roles = db.Table(
+    "user_roles",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("role_id", db.Integer, db.ForeignKey("roles.id")),
+)
 
 
 class UserLoginInfo(db.Model):
@@ -134,6 +152,9 @@ def init_user_fields():
 
 
 def init_user_tables():
+    # """初始化用户相关的所有表"""
+    db.create_all()
+    init_user_fields()
     # """初始化用户相关的所有表"""
     db.create_all()
     init_user_fields()
