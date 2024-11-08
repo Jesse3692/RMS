@@ -2,8 +2,10 @@ from flask import Flask
 
 from api.v1.auth.auth import auth_blueprint
 from api.v1.departments import departments_blueprint
+from api.v1.documents import documnet_blueprint
 from api.v1.roles import roles_blueprint
 from api.v1.users import users_blueprint
+from api.v1.workflow import workflow_blueprint
 from config.config import bcrypt, jsonrpc, jwt, login_manager, redis_client
 from config.database_config import DatabaseConfig
 from config.jwt_config import JWTConfig
@@ -11,6 +13,7 @@ from config.jwt_config import JWTConfig
 # from config.session_config import SessionConfig
 from models import db, init_db
 from models.log import init_log_tables
+from models.permission import init_permissions
 from models.users import init_user_tables
 
 
@@ -34,6 +37,7 @@ def create_app():
         # init_positions_table()
         # init_user_roles()
         # init_customer_table()
+        init_permissions()
         init_user_tables()
         init_log_tables()  # 添加这行
 
@@ -46,10 +50,12 @@ def register_blueprint(app):
 
     :param app: The Flask app
     """
-    app.register_blueprint(auth_blueprint)
-    app.register_blueprint(users_blueprint)
-    app.register_blueprint(departments_blueprint)
-    app.register_blueprint(roles_blueprint)
+    app.register_blueprint(auth_blueprint, url_prefix="/api/v1/auth")
+    app.register_blueprint(users_blueprint, url_prefix="/api/v1/users")
+    app.register_blueprint(departments_blueprint, url_prefix="/api/v1/departments")
+    app.register_blueprint(roles_blueprint, url_prefix="/api/v1/roles")
+    app.register_blueprint(workflow_blueprint, url_prefix="/api/v1/workflow")
+    app.register_blueprint(documnet_blueprint, url_prefix="/api/v1/documents")
 
 
 def init_extensions(app):

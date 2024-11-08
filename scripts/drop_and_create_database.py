@@ -20,7 +20,7 @@ def main():
     config = {
         "host": "localhost",
         "user": "root",  # 替换为你的 MySQL 用户名
-        "password": "123456",  # 替换为你的 MySQL 密码
+        "password": "a1234567",  # 替换为你的 MySQL 密码
         "charset": "utf8mb4",
     }
 

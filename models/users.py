@@ -3,8 +3,9 @@ from datetime import datetime, timezone
 from flask_login import UserMixin
 
 from config.config import bcrypt
-from models.role import Role
 from models.position import Position
+from models.role import Role
+
 from . import db
 
 
@@ -29,7 +30,9 @@ class User(UserMixin, db.Model):
     positions = db.relationship(
         "Position", secondary="user_positions", back_populates="users"
     )
-    departments = db.relationship("Department", back_populates="users", secondary="user_departments")
+    # departments = db.relationship(
+    #     "Department", back_populates="users", secondary="user_departments"
+    # )
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -69,16 +72,16 @@ user_roles = db.Table(
     db.Column("role_id", db.Integer, db.ForeignKey("roles.id")),
 )
 user_positions = db.Table(
-    'user_positions',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('position_id', db.Integer, db.ForeignKey('positions.id'))
+    "user_positions",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("position_id", db.Integer, db.ForeignKey("positions.id")),
 )
 
-user_departments = db.Table(
-    'user_departments',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('department_id', db.Integer, db.ForeignKey('departments.id'))
-)
+# user_departments = db.Table(
+#     "user_departments",
+#     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+#     db.Column("department_id", db.Integer, db.ForeignKey("departments.id")),
+# )
 
 
 class UserLoginInfo(db.Model):
@@ -164,7 +167,5 @@ def init_user_fields():
 
 
 def init_user_tables():
-    # """初始化用户相关的所有表"""
-    init_user_fields()
     # """初始化用户相关的所有表"""
     init_user_fields()
