@@ -7,6 +7,19 @@
         "test_*.py"
     ],
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "cSpell.userWords": [
+        "repr",
+        "skyblue",
+        "sqlalchemy",
+        "tablename",
+        "xlabel",
+        "ylabel"
+      ],
+    "cSpell.language": "en_US",
+    "cSpell.words": [
+        "jsonify",
+        "Werkzeug"
+    ]
 
 }
